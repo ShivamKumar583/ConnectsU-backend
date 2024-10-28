@@ -19,7 +19,7 @@ database.connect();
 const app = express();
  
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_ENDPOINT,
     methods:['GET' , 'POST','DELETE' , 'PUT'],
     credentials: true,
 }));
@@ -45,7 +45,7 @@ server = app.listen(PORT , () => {
 const io = new Server(server,{
     pingTimeout:60000,
     cors:{
-        origin:"http://localhost:3000",
+        origin:process.env.CLIENT_ENDPOINT,
         methods:['GET' , 'POST' , 'DELETE' , 'PUT'],
         credentials:true, 
     }
