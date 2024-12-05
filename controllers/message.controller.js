@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-const { MessageModel } = require("../models/index.js");
-=======
+
 const { MessageModel, ScheduledMessageModel } = require("../models/index.js");
->>>>>>> recovery-branch
 const { updateLatestMessage } = require("../services/conversation.service.js");
 const {
   createMessage,
@@ -11,10 +8,8 @@ const {
   updateMessageReaction,
   removeReaction,
 } = require("../services/message.service.js");
-<<<<<<< HEAD
-=======
 const translator = require("open-google-translator");
->>>>>>> recovery-branch
+
 
 exports.sendMessage = async(req,res,next) => {
     try{
@@ -102,8 +97,7 @@ exports.removeMessageReaction = async(req,res,next) =>{
   }
 }
 
-<<<<<<< HEAD
-=======
+
 // message translation
 exports.translateMessage = async (req, res, next) => {
   try {
@@ -172,8 +166,6 @@ exports.scheduleMessage = async (req, res, next) => {
   }
 };
 
-
->>>>>>> recovery-branch
 
 
 

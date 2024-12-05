@@ -91,8 +91,4 @@ exports.removeReaction = async(message_id , user_id)=>{
     
     await message.save();
     return message;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> recovery-branch
