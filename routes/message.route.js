@@ -1,7 +1,11 @@
 const express = require("express");
 const trimRequest = require('trim-request');
 const authMiddleware = require("../middleware/authMiddleware");
+<<<<<<< HEAD
 const { sendMessage, getMessages, addMessageReaction, removeMessageReaction } = require("../controllers/message.controller");
+=======
+const { sendMessage, getMessages, addMessageReaction, removeMessageReaction, translateMessage, scheduleMessage } = require("../controllers/message.controller");
+>>>>>>> recovery-branch
 const { route } = require("./auth.route");
 const router = express.Router(); 
 
@@ -12,4 +16,13 @@ router.route("/:convo_id").get(trimRequest.all, authMiddleware, getMessages);
 router.route('/:message_id/reaction').post(trimRequest.all,authMiddleware , addMessageReaction);
 router.route('/:message_id/reaction').delete(trimRequest.all , authMiddleware, removeMessageReaction);
 
+<<<<<<< HEAD
+=======
+// message translation
+router.route('/:message_id/translate').post(trimRequest.all , authMiddleware, translateMessage);
+
+// schedule message 
+router.route('/schedule').post(trimRequest.all , authMiddleware , scheduleMessage);
+
+>>>>>>> recovery-branch
 module.exports = router; 

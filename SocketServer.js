@@ -1,4 +1,10 @@
 let onlineUsers = [];
+// const cron = require('node-cron');
+const { MessageModel, ScheduledMessageModel } = require('./models');
+const Agenda = require('agenda');
+const agenda = new Agenda({ db: { address: process.env.MONGODB_URL } });
+
+
 exports.SocketServer = async(socket, io) => {
   //user joins or opens the application
   socket.on("join", (user) => {
@@ -28,6 +34,9 @@ exports.SocketServer = async(socket, io) => {
 
   //send and receive message
   socket.on("send message", (message) => {
+    console.log(message);
+    console.log('sended');
+    // console.log("socket" , socket);
 
     let conversation = message.conversation;
     if (!conversation?.users) return;
@@ -38,7 +47,7 @@ exports.SocketServer = async(socket, io) => {
       socket.in(user._id).emit("receive message", message);
 
       // seen feature      
-      io.to(user._id).emit('unseen message' , {
+      io.to(user._id).emit('unseen message' , { 
         conversationId:conversation._id,
         sender:message.sender._id,
       })
@@ -142,7 +151,39 @@ exports.SocketServer = async(socket, io) => {
     socket.broadcast.emit('end call');
     // io.to(id).emit('end call');
   });
+
+
+  // schedule message feature
+  agenda.define('send scheduled messages', async (job) => {
+    try {
+      const now = new Date();
   
+      const messagesToSend = await ScheduledMessageModel.find({
+        scheduledAt: { $lte: now },
+        status:'pending'
+      });
+
+      for (const message of messagesToSend) {
+
+        socket.in(message.sender._id.toString()).emit("schedule message", message);
+
+        await ScheduledMessageModel.deleteOne({ _id: message._id });  
+        
+        console.log( 'successfully done');
+      }
+    } catch (err) {
+      console.error("Error in sending scheduled messages:", err);
+    }
+  });
+
+  (async function () {
+    // IIFE to give access to async/await
+    await agenda.start();
+  
+    await agenda.every('1 minute', 'send scheduled messages');
+  
+  })();
+
  
 }
   

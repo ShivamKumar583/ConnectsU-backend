@@ -40,6 +40,17 @@ const messageSchema = mongoose.Schema(
       }
     ],
 
+    // schedule message feature
+    scheduledAt: {
+      type: Date,
+      default: null, // Null for immediate messages
+    },
+    isScheduled: {
+      type: Boolean,
+      default: false, // False if it's not a scheduled message
+    },
+
+
   },
   {
     collection: "messages",

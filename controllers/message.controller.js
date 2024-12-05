@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const { MessageModel } = require("../models/index.js");
+=======
+const { MessageModel, ScheduledMessageModel } = require("../models/index.js");
+>>>>>>> recovery-branch
 const { updateLatestMessage } = require("../services/conversation.service.js");
 const {
   createMessage,
@@ -7,6 +11,10 @@ const {
   updateMessageReaction,
   removeReaction,
 } = require("../services/message.service.js");
+<<<<<<< HEAD
+=======
+const translator = require("open-google-translator");
+>>>>>>> recovery-branch
 
 exports.sendMessage = async(req,res,next) => {
     try{
@@ -94,6 +102,78 @@ exports.removeMessageReaction = async(req,res,next) =>{
   }
 }
 
+<<<<<<< HEAD
+=======
+// message translation
+exports.translateMessage = async (req, res, next) => {
+  try {
+    const { message_id } = req.params;
+
+    if (!message_id) {
+      console.log('Please add messageId in req.params');
+      return res.sendStatus(400);
+    }
+
+    const message = await MessageModel.findById(message_id);
+
+    // Ensure the message exists
+    if (!message) {
+      console.log('Message not found');
+      return res.sendStatus(404);
+    }
+
+    // Translate the message
+    // translator.supportedLanguages();
+    console.log(Object.keys(translator.supportedLanguages()));
+    const result = await translator.TranslateLanguageData({
+      listOfWordsToTranslate: [message.message],
+      fromLanguage: "en",
+      toLanguage: "hi",
+    });
+
+    // Send the translated result back as JSON
+    res.json({ translatedMessage: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+// schedule message feature
+exports.scheduleMessage = async (req, res, next) => {
+  try {
+    const { sender ,message,conversation,scheduledAt,files } = req.body;
+    console.log(sender);
+    console.log(message);
+    console.log(conversation);
+    console.log(scheduledAt);
+    
+    if (!sender || !message || !conversation || !scheduledAt) {
+      console.log('All fields are required in req.body');
+      return res.sendStatus(400).json({ error: "All fields are required." });
+    }
+
+    // save schedules msg
+    const scheduledMessage = await ScheduledMessageModel.create({
+      sender,
+      message,
+      conversation,
+      scheduledAt: new Date(scheduledAt), 
+      files,
+    });
+
+    console.log(scheduledMessage);
+
+    await scheduledMessage.save();
+    res.status(201).json({ success: true, message: scheduledMessage });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+>>>>>>> recovery-branch
 
 
 
