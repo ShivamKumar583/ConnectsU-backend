@@ -9,6 +9,7 @@ const {
   removeReaction,
 } = require("../services/message.service.js");
 const translator = require("open-google-translator");
+const messageQueue = require('../utils/Queue.js')
 
 
 exports.sendMessage = async(req,res,next) => {
@@ -154,12 +155,25 @@ exports.scheduleMessage = async (req, res, next) => {
       conversation,
       scheduledAt: new Date(scheduledAt), 
       files,
+      staus:'pending'
     });
 
     console.log(scheduledMessage);
 
-    await scheduledMessage.save();
-    res.status(201).json({ success: true, message: scheduledMessage });
+    // add to bull queue
+    const delay = new Date(scheduledAt) - new Date();
+    console.log(delay);
+
+    await messageQueue.add(
+      {messageId:scheduledMessage._id , sender,message,conversation,scheduledAt,files},
+      {delay}
+    )
+
+    console.log('Message scheduled successfully');
+    res.status(201).json({ 
+      Note:'Message scheduled successfully',
+      success: true,
+      message: scheduledMessage });
 
   } catch (error) {
     next(error);

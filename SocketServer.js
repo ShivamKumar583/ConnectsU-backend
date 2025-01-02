@@ -2,7 +2,8 @@ let onlineUsers = [];
 // const cron = require('node-cron');
 const { MessageModel, ScheduledMessageModel } = require('./models');
 const Agenda = require('agenda');
-const agenda = new Agenda({ db: { address: process.env.MONGODB_URL } });
+const messageQueue = require('./utils/Queue');
+// const agenda = new Agenda({ db: { address: process.env.MONGODB_URL } });
 
 
 exports.SocketServer = async(socket, io) => {
@@ -38,8 +39,8 @@ exports.SocketServer = async(socket, io) => {
     console.log('sended');
     // console.log("socket" , socket);
 
-    let conversation = message.conversation;
-    if (!conversation?.users) return;
+    let conversation = message?.conversation;
+    if (!conversation?.users) return; 
     conversation.users.forEach((user) => {
       if (user._id === message.sender._id) return;
 
@@ -154,36 +155,38 @@ exports.SocketServer = async(socket, io) => {
 
 
   // schedule message feature
-  agenda.define('send scheduled messages', async (job) => {
-    try {
-      const now = new Date();
+  // agenda.define('send scheduled messages', async (job) => {
+  //   try {
+  //     const now = new Date();
   
-      const messagesToSend = await ScheduledMessageModel.find({
-        scheduledAt: { $lte: now },
-        status:'pending'
-      });
+  //     const messagesToSend = await ScheduledMessageModel.find({
+  //       scheduledAt: { $lte: now },
+  //       status:'pending'
+  //     });
 
-      for (const message of messagesToSend) {
-
-        socket.in(message.sender._id.toString()).emit("schedule message", message);
-
-        await ScheduledMessageModel.deleteOne({ _id: message._id });  
+  //     for (const message of messagesToSend) {
         
-        console.log( 'successfully done');
-      }
-    } catch (err) {
-      console.error("Error in sending scheduled messages:", err);
-    }
-  });
+  //       console.log(message.sender._id);
+  //       socket.in(message.sender._id.toString()).emit("schedule message", message);
 
-  (async function () {
-    // IIFE to give access to async/await
-    await agenda.start();
-  
-    await agenda.every('1 minute', 'send scheduled messages');
-  
-  })();
+  //       await ScheduledMessageModel.deleteOne({ _id: message._id });  
+        
+  //       console.log( 'successfully done');
+  //     }
+  //   } catch (err) {
+  //     console.error("Error in sending scheduled messages:", err);
+  //   }
+  // });
 
- 
-}
+  // (async function () {
+  //   // IIFE to give access to async/await
+  //   await agenda.start();
   
+  //   await agenda.every('1 minute', 'send scheduled messages');
+  
+  // })();
+
+  
+
+
+}   
