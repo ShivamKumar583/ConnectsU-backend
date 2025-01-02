@@ -138,10 +138,6 @@ exports.translateMessage = async (req, res, next) => {
 exports.scheduleMessage = async (req, res, next) => {
   try {
     const { sender ,message,conversation,scheduledAt,files } = req.body;
-    console.log(sender);
-    console.log(message);
-    console.log(conversation);
-    console.log(scheduledAt);
     
     if (!sender || !message || !conversation || !scheduledAt) {
       console.log('All fields are required in req.body');
@@ -158,18 +154,15 @@ exports.scheduleMessage = async (req, res, next) => {
       staus:'pending'
     });
 
-    console.log(scheduledMessage);
 
     // add to bull queue
     const delay = new Date(scheduledAt) - new Date();
-    console.log(delay);
 
     await messageQueue.add(
       {messageId:scheduledMessage._id , sender,message,conversation,scheduledAt,files},
       {delay}
     )
 
-    console.log('Message scheduled successfully');
     res.status(201).json({ 
       Note:'Message scheduled successfully',
       success: true,

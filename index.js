@@ -12,14 +12,13 @@ const ConversationRoutes = require("./routes/conversation.route.js");
 const MessageRoutes = require("./routes/message.route.js");
 const {SocketServer} = require('./SocketServer.js')
 const PORT = process.env.PORT || 4000;
-const http = require('http');
 const messageQueue = require('./utils/Queue.js');
 const { ScheduledMessageModel } = require('./models/index.js');
 
 // datdbase connect 
 database.connect();
 const app = express();
- 
+
 app.use(cors({
     origin: process.env.CLIENT_ENDPOINT,
     methods:['GET' , 'POST','DELETE' , 'PUT'],
@@ -73,7 +72,7 @@ messageQueue.process(async(job) => {
     console.log('Scheduled message delete hogya' );
 
     console.log('Scheduled message sent' , message);
-  });
+});
 
 // cloudinary connection
 cloudinaryConnect(); 
