@@ -1,6 +1,7 @@
 const Bull = require('bull')
 const Redis = require('ioredis')
 
+console.log(process.env.REDIS_URL);
 const redisOptions = process.env.REDIS_URL
   ? { url: process.env.REDIS_URL } // Use Redis URL for Render
   : {

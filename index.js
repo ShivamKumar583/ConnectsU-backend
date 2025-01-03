@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 4000;
 const messageQueue = require('./utils/Queue.js');
 const { ScheduledMessageModel } = require('./models/index.js');
 
+require('dotenv').config();
+
 // datdbase connect 
 database.connect();
 const app = express();
