@@ -2,8 +2,8 @@ const Bull = require('bull')
 const Redis = require('ioredis')
 
 const redisOptions = {
-    host : 'localhost',
-    port: 6379
+    host :process.env.REDIS_HOST || 'localhost',
+    port: process.env.REDIS_PORT || 6379
 }
 
 const messageQueue = new Bull('messageQueue', {redis:redisOptions})
