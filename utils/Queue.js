@@ -1,13 +1,10 @@
 const Bull = require('bull')
 const Redis = require('ioredis')
 
-console.log(process.env.REDIS_URL);
-const redisOptions = process.env.REDIS_URL
-  ? { url: process.env.REDIS_URL } // Use Redis URL for Render
-  : {
-      host: process.env.REDIS_HOST || 'localhost',  // Use 'localhost' for local Docker development
-      port: process.env.REDIS_PORT || 6379,         // Default Redis port (6379)
-    };
+const redisOptions =process.env.REDIS_URL ? process.env.REDIS_URL : {
+    host :process.env.REDIS_HOST || 'localhost',
+    port: process.env.REDIS_PORT || 6379
+}
 
 const messageQueue = new Bull('messageQueue', {redis:redisOptions})
 messageQueue.on('ready', () => {
