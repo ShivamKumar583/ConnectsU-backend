@@ -12,12 +12,15 @@ const ConversationRoutes = require("./routes/conversation.route.js");
 const MessageRoutes = require("./routes/message.route.js");
 const {SocketServer} = require('./SocketServer.js')
 const PORT = process.env.PORT || 4000;
-const http = require('http')
+const messageQueue = require('./utils/Queue.js');
+const { ScheduledMessageModel } = require('./models/index.js');
+
+require('dotenv').config();
 
 // datdbase connect 
 database.connect();
 const app = express();
- 
+
 app.use(cors({
     origin: process.env.CLIENT_ENDPOINT,
     methods:['GET' , 'POST','DELETE' , 'PUT'],
@@ -55,9 +58,26 @@ io.on('connection' , (socket) =>{
     console.log('socket io connected successfully');
     SocketServer(socket,io)
 })
-  
+
+// Process scheduled msg
+messageQueue.process(async(job) => {
+    console.log('jpb mil gyi ' , job.data);
+    const {messageId ,conversation,sender,message,} = job.data;
+
+    console.log('sender' , sender);
+    io.in(sender.toString()).emit("schedule message", {message,conversation});
+
+    console.log('Scheduled msg socket ');
+
+    await ScheduledMessageModel.deleteOne({ _id: messageId });  
+
+    console.log('Scheduled message delete hogya' );
+
+    console.log('Scheduled message sent' , message);
+});
+
 // cloudinary connection
-cloudinaryConnect();
+cloudinaryConnect(); 
 
 // routes
 app.use("/api/v1/auth", authRoutes);
